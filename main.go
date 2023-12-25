@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/pelletier/go-toml/v2"
@@ -39,8 +40,8 @@ func readConfig(configPath string) (map[string]string, error) {
 func copy(src, dest string) bool {
 	success := true
 
-	src = os.ExpandEnv(src)
-	dest = os.ExpandEnv(dest)
+	src = filepath.FromSlash(os.ExpandEnv(src))
+	dest = filepath.FromSlash(os.ExpandEnv(dest))
 	fmt.Printf("Copying \"%s\" to \"%s\"...\n", src, dest)
 
 	opts := cp.Options{
@@ -86,7 +87,7 @@ func distribute(ctx *cli.Context) error {
 		return cli.Exit("No config file was provided. Abort.", 10)
 	}
 
-	if (!ctx.Bool("overwrite")) {
+	if !ctx.Bool("overwrite") {
 		fmt.Print("Warning: Existing destinations will be deleted and replaced. Continue (y/n)? ")
 		reader := bufio.NewReader(os.Stdin)
 		input, err := reader.ReadString('\n')
@@ -128,7 +129,7 @@ func fetch(ctx *cli.Context) error {
 		return cli.Exit("No config file was provided. Abort.", 10)
 	}
 
-	if (!ctx.Bool("overwrite")) {
+	if !ctx.Bool("overwrite") {
 		fmt.Print("Warning: Existing destinations will be deleted and replaced. Continue (y/n)? ")
 		reader := bufio.NewReader(os.Stdin)
 		input, err := reader.ReadString('\n')
@@ -171,9 +172,9 @@ func main() {
 		Action:    distribute,
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
-				Name: "overwrite",
+				Name:    "overwrite",
 				Aliases: []string{"o"},
-				Usage: "skip confirmation for overwriting existing destinations",
+				Usage:   "skip confirmation for overwriting existing destinations",
 			},
 		},
 		HideHelpCommand: true,
@@ -185,12 +186,12 @@ func main() {
 		ArgsUsage: "CONFIG_FILE",
 		Flags: []cli.Flag{
 			&cli.BoolFlag{
-				Name: "overwrite",
+				Name:    "overwrite",
 				Aliases: []string{"o"},
-				Usage: "skip confirmation for overwriting existing destinations",
+				Usage:   "skip confirmation for overwriting existing destinations",
 			},
 		},
-		Action:    fetch,
+		Action:          fetch,
 		HideHelpCommand: true,
 	}
 
