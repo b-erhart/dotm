@@ -75,6 +75,17 @@ func copy(src, dest string) bool {
 	opts := cp.Options{
 		NoFollowSymlinks: true,
 		PreCallback: func(_, dest string, srcfi os.FileInfo) error {
+			parentDir := filepath.Dir(dest)
+
+			if _, err := os.Stat(parentDir); os.IsNotExist(err) {
+				fmt.Println("Parent directory of destination does not exist. Creating...")
+				if err := os.MkdirAll(parentDir, os.ModePerm); err != nil {
+					fmt.Printf("\nError - %v\n", err)
+					success = false
+					return cp.ErrSkip
+				}
+			}
+
 			if _, err := os.Stat(dest); os.IsNotExist(err) {
 				return nil
 			}
