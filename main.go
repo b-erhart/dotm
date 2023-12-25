@@ -1,10 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/pelletier/go-toml/v2"
 	"github.com/u-root/u-root/pkg/cp"
@@ -84,6 +86,23 @@ func distribute(ctx *cli.Context) error {
 		return cli.Exit("No config file was provided. Abort.", 10)
 	}
 
+	if (!ctx.Bool("overwrite")) {
+		fmt.Print("Warning: Existing destinations will be deleted and replaced. Continue (y/n)? ")
+		reader := bufio.NewReader(os.Stdin)
+		input, err := reader.ReadString('\n')
+
+		if err != nil {
+			return cli.Exit(fmt.Sprintf("\nUnable to process input - %v", err), 30)
+		}
+
+		input = strings.Replace(input, "\r\n", "", -1)
+		input = strings.Replace(input, "\n", "", -1)
+
+		if input != "y" && input != "yes" {
+			return cli.Exit("Aborting.", 0)
+		}
+	}
+
 	config, err := readConfig(configPath)
 
 	if err != nil {
@@ -107,6 +126,23 @@ func fetch(ctx *cli.Context) error {
 
 	if configPath == "" {
 		return cli.Exit("No config file was provided. Abort.", 10)
+	}
+
+	if (!ctx.Bool("overwrite")) {
+		fmt.Print("Warning: Existing destinations will be deleted and replaced. Continue (y/n)? ")
+		reader := bufio.NewReader(os.Stdin)
+		input, err := reader.ReadString('\n')
+
+		if err != nil {
+			return cli.Exit(fmt.Sprintf("Unable to process input - %v", err), 30)
+		}
+
+		input = strings.Replace(input, "\r\n", "", -1)
+		input = strings.Replace(input, "\n", "", -1)
+
+		if input != "y" && input != "yes" {
+			return cli.Exit("Aborting.", 0)
+		}
 	}
 
 	config, err := readConfig(configPath)
@@ -133,6 +169,13 @@ func main() {
 		Usage:     "copy dotfiles to specified locations",
 		ArgsUsage: "CONFIG_FILE",
 		Action:    distribute,
+		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name: "overwrite",
+				Aliases: []string{"o"},
+				Usage: "skip confirmation for overwriting existing destinations",
+			},
+		},
 		HideHelpCommand: true,
 	}
 
@@ -140,6 +183,13 @@ func main() {
 		Name:      "fetch",
 		Usage:     "copy dotfiles from specified locations",
 		ArgsUsage: "CONFIG_FILE",
+		Flags: []cli.Flag{
+			&cli.BoolFlag{
+				Name: "overwrite",
+				Aliases: []string{"o"},
+				Usage: "skip confirmation for overwriting existing destinations",
+			},
+		},
 		Action:    fetch,
 		HideHelpCommand: true,
 	}
