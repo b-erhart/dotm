@@ -11,14 +11,17 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+// Copy dotfiles from repository to system locations
 func distribute(ctx *cli.Context) error {
 	return copyConfigEntries(ctx, false)
 }
 
+// Copy dotfiles from system locations to repository
 func fetch(ctx *cli.Context) error {
 	return copyConfigEntries(ctx, true)
 }
 
+// Copy dotfiles specified in config file. If swapSrcDest is false, files are copied from repository to system. Otherwise files are copied in the reverse direction.
 func copyConfigEntries(ctx *cli.Context, swapSrcDest bool) error {
 	configPath := ctx.Args().Get(0)
 
@@ -26,21 +29,10 @@ func copyConfigEntries(ctx *cli.Context, swapSrcDest bool) error {
 		return cli.Exit("No config file was provided. Abort.", 10)
 	}
 
-	if !ctx.Bool("overwrite") {
-		fmt.Print("Warning: Existing destinations will be deleted and replaced. Continue (y/n)? ")
-		reader := bufio.NewReader(os.Stdin)
-		input, err := reader.ReadString('\n')
+	err := checkOverwriteConfirmation(ctx)
 
-		if err != nil {
-			return cli.Exit(fmt.Sprintf("\nUnable to process input - %v", err), 30)
-		}
-
-		input = strings.Replace(input, "\r\n", "", -1)
-		input = strings.Replace(input, "\n", "", -1)
-
-		if input != "y" && input != "yes" {
-			return cli.Exit("Aborting.", 0)
-		}
+	if err != nil {
+		return err
 	}
 
 	config, err := readConfig(configPath)
@@ -60,11 +52,42 @@ func copyConfigEntries(ctx *cli.Context, swapSrcDest bool) error {
 		}
 	}
 
-	fmt.Printf("%d error(s) occured.", errCount)
+	switch errCount {
+	case 0:
+		fmt.Println("Success.")
+	case 1:
+		fmt.Printf("%d error occured.\n", errCount)
+	default:
+		fmt.Printf("%d errors occured.\n", errCount)
+	}
 
 	return nil
 }
 
+// Check if user confirmed that overwriting existing data at copy destinations is fine.
+func checkOverwriteConfirmation(ctx *cli.Context) error {
+	if !ctx.Bool("overwrite") {
+		fmt.Print("Warning: Existing destinations will be deleted and replaced. Continue (y/n)? ")
+
+		reader := bufio.NewReader(os.Stdin)
+		input, err := reader.ReadString('\n')
+
+		if err != nil {
+			return cli.Exit(fmt.Sprintf("\nUnable to process input - %v", err), 30)
+		}
+
+		input = strings.ReplaceAll(input, "\r\n", "")
+		input = strings.ReplaceAll(input, "\n", "")
+
+		if input != "y" && input != "yes" {
+			return cli.Exit("Aborting.", 0)
+		}
+	}
+
+	return nil
+}
+
+// Copy a file or directory from src to dest.
 func copy(src, dest string) bool {
 	success := true
 

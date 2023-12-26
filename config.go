@@ -9,6 +9,7 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
+// Read configuration TOML file.
 func readConfig(configPath string) (map[string]string, error) {
 	configFile, err := os.Open(configPath)
 
