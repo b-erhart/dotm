@@ -11,12 +11,12 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-// Copy dotfiles from repository to system locations
+// Copy dotfiles from repository to system locations.
 func distribute(ctx *cli.Context) error {
 	return copyConfigEntries(ctx, false)
 }
 
-// Copy dotfiles from system locations to repository
+// Copy dotfiles from system locations to repository.
 func fetch(ctx *cli.Context) error {
 	return copyConfigEntries(ctx, true)
 }
