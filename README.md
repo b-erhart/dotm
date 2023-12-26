@@ -1,5 +1,5 @@
-<h1 style="text-align: center; font-family: ui-monospace,SFMono-Regular,SF Mono,Menlo,Consolas,Liberation Mono,monospace;">dotm</h1>
-<h3 style="text-align: center">An incredibly simple dotfiles manager.</h3>
+<h1 align="center">dotm</h1>
+<h3 align="center">An incredibly simple dotfiles manager.</h3>
 
 `dotm` is a command-line utility for managing dotfiles accross multiple devices and operating systems. While numerous tools exist for this purpose, they tend to be feature-heavy, requiring non-trivial configuration, or lack cross-platform operability. `dotm` addresses these issues by offering a straightforward, pragmatic, and cross-platform solution that can be set up within a few minutes.
 
@@ -39,7 +39,7 @@ Config file `windows-config.toml`:
 > Note: using `~` for the home directory is currently not supported. Please use the `${HOMEPATH}` environment variable on Windows and `${HOME}` on Unix-based systems instead.
 
 #### Commands
-`dotm` provides two commands using config files: `dotm fetch <config_file>` copies specified entries from the system to the repository. `dotm distribute <config_file>` performs the opposite function, copying all entries from the repository to the system. Refer to `dotm -h`, `dotm fetch -h`, and `dotm distribute -h`.
+`dotm` provides two commands using config files: `dotm fetch <config_file>` copies specified entries from the system to the repository. `dotm distribute <config_file>` performs the opposite function, copying all entries from the repository to the system. Refer to `dotm -h`, `dotm fetch -h`, and `dotm distribute -h` for further information.
 
 > Warning: Existing files/directories targeted by the copies will be fully overwritten. This means any existing data at these locations will be erased.
 
