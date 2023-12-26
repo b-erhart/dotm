@@ -7,7 +7,7 @@
 
 ## Usage
 ### How it Works
-The fundamental concept behind dotm is to maintain a Git repository containing all dotfiles. Config files, written in TOML format, define mappings between repository files/directories and their corresponding locations on systems.
+The fundamental concept behind `dotm` is to maintain a Git repository containing all dotfiles. Config files, written in TOML format, define mappings between repository files/directories and their corresponding locations on systems. These mapped files are synchronized via the `dotm` CLI tool.
 
 #### Entry Format
 A single line entry is created for every file/directory in the repository that should be mapped to a system location. 
