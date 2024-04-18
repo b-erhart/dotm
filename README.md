@@ -1,7 +1,9 @@
 <h1 align="center">dotm</h1>
-<h3 align="center">An incredibly simple dotfiles manager.</h3>
+<h3 align="center">A simple dotfiles manager.</h3>
 
-`dotm` is a command-line utility for managing dotfiles accross multiple devices and operating systems. While numerous tools exist for this purpose, they tend to be feature-heavy, requiring non-trivial configuration, or lack cross-platform operability. `dotm` addresses these issues by offering a straightforward, pragmatic, and cross-platform solution that can be set up within a few minutes.
+`dotm` is a command-line utility for managing [dotfiles](https://wiki.archlinux.org/title/Dotfiles) accross multiple devices and operating systems. While numerous tools exist for this purpose, they tend to be feature-heavy, requiring non-trivial configuration, or lack cross-platform operability. `dotm` addresses these issues by offering a straightforward, pragmatic, and cross-platform solution that can be set up within a few minutes.
+
+> **Note:** This is just a little experiment. Please use with caution if you want to try it.
 
 ---
 
