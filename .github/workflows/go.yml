@@ -1,0 +1,41 @@
+name: Build Binaries
+
+on:
+  push:
+    tags: 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        goos: [linux, windows, darwin]
+        goarch: [amd64, arm64]
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+    - name: Create build dir
+      run: |
+        mkdir build/
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.22.x'
+    - name: Install deps
+      run: go get ./...
+    - name: Build
+      env:
+        GOOS: ${{ matrix.goos }}
+        GOARCH: ${{ matrix.goarch }}
+      run: |
+        NAME="dotm-$GOOS-$GOARCH"
+        if [[ "$GOOS" == "windows" ]]; then NAME="$NAME.exe"; fi
+        go build -o "build/$NAME" -v ./...
+    - name: Create release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: build/*
+        token: ${{ secrets.ACCESS_TOKEN }}
