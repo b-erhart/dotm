@@ -6,14 +6,9 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        goos: [linux, windows, darwin]
-        goarch: [amd64, arm64]
-
+  prepare:
+    name: Prepare builds
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout repo
       uses: actions/checkout@v4
@@ -26,6 +21,15 @@ jobs:
         go-version: '1.22.x'
     - name: Install deps
       run: go get ./...
+
+  build:
+    name: Build binaries
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [linux, windows, darwin]
+        goarch: [amd64, arm64]
+    steps:
     - name: Build
       env:
         GOOS: ${{ matrix.goos }}
@@ -34,7 +38,12 @@ jobs:
         NAME="dotm-$GOOS-$GOARCH"
         if [[ "$GOOS" == "windows" ]]; then NAME="$NAME.exe"; fi
         go build -o "build/$NAME" -v ./...
-    - name: Create release
+
+  release:
+    name: Create release
+    runs-on: ubuntu-latest
+    steps:
+    - name: Release
       uses: softprops/action-gh-release@v2
       with:
         files: build/*
