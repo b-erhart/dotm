@@ -5,7 +5,7 @@ import "github.com/urfave/cli/v2"
 // Application specification for urfave/cli framework.
 var app = cli.App{
 	Name:  "dotm",
-	Usage: "an incredibly simple dotfiles manager",
+	Usage: "a simple dotfiles manager",
 	Authors: []*cli.Author{
 		{
 			Name:  "Benedikt Erhart",

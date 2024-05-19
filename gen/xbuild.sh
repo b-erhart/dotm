@@ -3,12 +3,12 @@
 # Based on the build script of https://github.com/gokcehan/lf
 
 if [ -d ./dist ]; then
-    rm -rf ./build || exit 5
+    rm -rf ./dist || exit 5
 fi
 
 mkdir ./dist || exit 5
 
-ERRORS=
+ERRORS=0
 
 build() {
     if [ $# != 2 ]; then
@@ -45,7 +45,7 @@ build linux arm64
 build windows amd64
 build windows arm64
 
-if [ -n "$ERRORS" ]; then
+if [ "$ERRORS" -ne "0" ]; then
     printf "\nxbuild.sh: some targets faild to compile."
     exit 1
 fi
