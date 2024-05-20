@@ -38,7 +38,6 @@ Config file `windows-config.toml`:
 "bash/.bashrc" = "${HOMEPATH}/.bashrc"
 "ssh" = "C:/Users/User/.ssh"
 ```
-> Note: using `~` for the home directory is currently not supported. Please use the `${HOMEPATH}` environment variable on Windows and `${HOME}` on Unix-based systems instead.
 
 #### Commands
 `dotm` provides two commands using config files: `dotm fetch <config_file>` copies specified entries from the system to the repository. `dotm distribute <config_file>` performs the opposite function, copying all entries from the repository to the system. Refer to `dotm -h`, `dotm fetch -h`, and `dotm distribute -h` for further information.
