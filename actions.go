@@ -4,7 +4,9 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/user"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/u-root/u-root/pkg/cp"
@@ -87,12 +89,52 @@ func checkOverwriteConfirmation(ctx *cli.Context) error {
 	return nil
 }
 
+// If path starts with "~", it is replaced with the path to the home directory.
+func expandHomeDir(path string) (string, error) {
+	path = filepath.FromSlash(path)
+	prefix := "~" + string(os.PathSeparator)
+
+	if !strings.HasPrefix(path, prefix) {
+		return path, nil
+	}
+
+	homeVar := "HOME"
+	if runtime.GOOS == "windows" {
+		homeVar = "HOMEPATH"
+	}
+
+	envHome, envHomeSet := os.LookupEnv(homeVar)
+	if envHomeSet && envHome != "" {
+		path = strings.Replace(path, prefix, envHome+string(os.PathSeparator), 1)
+		return path, nil
+	}
+
+	usr, err := user.Current()
+	if err != nil {
+		return path, err
+	}
+
+	path = strings.Replace(path, prefix, usr.HomeDir+string(os.PathSeparator), 1)
+
+	return path, nil
+}
+
 // Copy a file or directory from src to dest.
 func copy(src, dest string) bool {
 	success := true
 
-	src = filepath.FromSlash(os.ExpandEnv(src))
-	dest = filepath.FromSlash(os.ExpandEnv(dest))
+	src, err := expandHomeDir(os.ExpandEnv(src))
+	if err != nil {
+		fmt.Printf("Error - unable to expand \"~\" in \"%s\" (%v)\n", src, err)
+		return false
+	}
+
+	dest, err = expandHomeDir(os.ExpandEnv(dest))
+	if err != nil {
+		fmt.Printf("Error - unable to expand \"~\" in \"%s\" (%v)\n", dest, err)
+		return false
+	}
+
 	fmt.Printf("Copying \"%s\" to \"%s\"...\n", src, dest)
 
 	opts := cp.Options{
@@ -128,7 +170,7 @@ func copy(src, dest string) bool {
 		},
 	}
 
-	err := opts.CopyTree(src, dest)
+	err = opts.CopyTree(src, dest)
 
 	if err != nil {
 		success = false
